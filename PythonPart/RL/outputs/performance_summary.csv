@@ -1,0 +1,4 @@
+Method,Overall Hit Rate (%),High-g Hit Rate (%),Avg Energy (m²/s³),Avg Time (s)
+Full Obs,89.9,73.0,159.4,6.51
+Partial Obs,3.0,2.8,195.5,6.51
+Partial+LSTM,0.1,0.0,23.3,6.13

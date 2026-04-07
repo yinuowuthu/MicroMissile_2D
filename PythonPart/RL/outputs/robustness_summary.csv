@@ -1,0 +1,9 @@
+Method,Noise Level (%),Overall Hit Rate (%),High-g Hit Rate (%)
+Full Obs (7D),0,1.4,1.5
+Full Obs (7D),5,1.6,1.8
+Full Obs (7D),10,1.7,2.2
+Full Obs (7D),20,1.6,2.0
+Engineering Partial (6D),0,1.3,1.2
+Engineering Partial (6D),5,1.5,1.2
+Engineering Partial (6D),10,1.6,1.2
+Engineering Partial (6D),20,1.7,1.2
