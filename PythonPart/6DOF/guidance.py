@@ -33,7 +33,7 @@ class ProNavGuidance:
         return K_aero * alpha_max
 
     def compute(self, seeker_data: dict, V_missile: float,
-                dt: float, mass: float = None) -> tuple:
+                dt: float, mass: float = None, t: float = None) -> tuple:
         """
         计算制导加速度指令
 

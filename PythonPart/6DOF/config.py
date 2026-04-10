@@ -115,7 +115,7 @@ class SimConfig:
     dt: float = 0.0005              # 仿真步长 s（2kHz，6DOF需要小步长）
     t_max: float = 5.0              # 最大仿真时间 s
     r_hit: float = 0.05             # 命中判定距离 m（厘米级动能撞击）
-    r_init_min: float = 30.0        # 初始距离范围 m
-    r_init_max: float = 300.0
+    r_init_min: float = 50.0        # 初始距离范围 m
+    r_init_max: float = 200.0
     alt_max: float = 500.0          # 最大拦截高度 m
     decision_dt: float = 0.01       # 制导决策周期 s（100Hz）

@@ -163,7 +163,7 @@ class Engagement:
             -r0 * np.sin(el0),
         ])
 
-        t_heading = az0 + np.pi / 2 + rng.uniform(-0.5, 0.5)
+        t_heading = az0 + np.pi + rng.uniform(-np.pi / 6, np.pi / 6)
         t_climb = rng.uniform(-0.1, 0.1)
         t_speed = self.tp.V0
         t_vel = np.array([
@@ -226,7 +226,7 @@ class Engagement:
             else:
                 # PNG模式
                 self._a_el_cmd, self._a_az_cmd = self.guidance.compute(
-                    self._seeker_data, m.speed, self.cfg.decision_dt, m.mass)
+                    self._seeker_data, m.speed, self.cfg.decision_dt, m.mass, t=self.t)
 
         # ---- 自驾仪（每个仿真步都运行） ----
         alpha = m.alpha

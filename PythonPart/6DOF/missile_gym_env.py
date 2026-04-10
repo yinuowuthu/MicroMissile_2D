@@ -61,10 +61,15 @@ class MissileGym6DOF(gym.Env):
 
         los_rate_el = sd.get('los_rate_el', 0.0)
         los_rate_az = sd.get('los_rate_az', 0.0)
+        # LOS角度：智能体需要知道目标在哪个方向
+        los_el = sd.get('los_el', 0.0)
+        los_az = sd.get('los_az', 0.0)
 
         return np.array([
-            np.clip(los_rate_el / 1.0,          -10, 10),
-            np.clip(los_rate_az / 1.0,          -10, 10),
+            np.clip(los_el / np.radians(45),    -10, 10),  # LOS仰角（归一化到±45°）
+            np.clip(los_az / np.radians(45),    -10, 10),  # LOS方位角
+            np.clip(los_rate_el / 1.0,          -10, 10),  # LOS仰角速率 rad/s
+            np.clip(los_rate_az / 1.0,          -10, 10),  # LOS方位角速率 rad/s
             np.clip(m.alpha / np.radians(20),   -10, 10),
             np.clip(m.beta  / np.radians(20),   -10, 10),
             np.clip(r / 100.0,                    0, 10),
@@ -79,14 +84,15 @@ class MissileGym6DOF(gym.Env):
             self._rng = np.random.RandomState(seed)
 
         ep_seed = int(self._rng.randint(0, 2**31))
-        self.eng.reset(r0=100.0, seed=ep_seed)
+        self.eng.reset(r0=None, seed=ep_seed)
 
         r_los = self.eng.get_los()
         m = self.eng.missile
         self.eng._seeker_data = self.eng.seeker.update(
             r_los, self.eng.t, m.state[8], m.state[7])
 
-        self._r_prev = self.eng.get_range()
+        self._r0 = self.eng.get_range()
+        self._r_prev = self._r0
         return self._get_obs(), {}
 
     def step(self, action: np.ndarray):
@@ -103,9 +109,9 @@ class MissileGym6DOF(gym.Env):
 
         r_after = self.eng.get_range()
 
-        # 主要奖励：距离减少（归一化）
+        # 接近奖励：放大5倍，增强过程信号
         dr = r_before - r_after
-        reward = dr / 10.0  # 每减少10m得1分
+        reward = 5.0 * dr / max(self._r0, 1.0)
 
         terminated = False
         if self.eng.done:
@@ -113,9 +119,9 @@ class MissileGym6DOF(gym.Env):
             if self.eng.reason == 'HIT':
                 reward += self.hit_reward
             else:
-                # 按最近距离惩罚
+                # 平滑脱靶惩罚：r_min越小惩罚越小，鼓励"接近命中"
                 r_min = self.eng.r_min
-                reward -= self.miss_penalty * min(r_min / 5.0, 5.0)
+                reward -= self.miss_penalty * (1.0 - np.exp(-r_min / 3.0))
 
         self._r_prev = r_after
 
